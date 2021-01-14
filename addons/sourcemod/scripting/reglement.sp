@@ -156,7 +156,7 @@ public int Handle_MenuRules(Menu menu, MenuAction action, int client, int param)
 			rules_kv.GetString("maxsubmenu", maxsubmenu, sizeof(maxsubmenu));
 			
 			
-			Format(title, sizeof(title), "%s\n ", title);
+			Format(title, sizeof(title), "%s", title);
 			sub.SetTitle(title);	
 			
 			int maxsub = StringToInt(maxsubmenu);
