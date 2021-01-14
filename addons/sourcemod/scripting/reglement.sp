@@ -168,7 +168,7 @@ public int Handle_MenuRules(Menu menu, MenuAction action, int client, int param)
 				
 				if(rules_kv.JumpToKey(tmp))
 				{
-					char subtitle[128];
+					char subtitle[256];
 					rules_kv.GetString("subtitle", subtitle, sizeof(subtitle));
 					
 					sub.AddItem("", subtitle, ITEMDRAW_DISABLED);
