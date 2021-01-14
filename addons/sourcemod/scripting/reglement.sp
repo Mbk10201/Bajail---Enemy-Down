@@ -149,7 +149,7 @@ public int Handle_MenuRules(Menu menu, MenuAction action, int client, int param)
 		rules_kv.GoBack();
 		if(rules_kv.JumpToKey(info))
 		{
-			Panel panel = new Panel();
+			Menu sub = new Menu(Handle_MenuRules);
 			char title[32], maxsubmenu[8];
 			
 			rules_kv.GetString("title", title, sizeof(title));	
@@ -157,7 +157,7 @@ public int Handle_MenuRules(Menu menu, MenuAction action, int client, int param)
 			
 			
 			Format(title, sizeof(title), "%s\n ", title);
-			panel.SetTitle(title);	
+			sub.SetTitle(title);	
 			
 			int maxsub = StringToInt(maxsubmenu);
 			
@@ -171,18 +171,19 @@ public int Handle_MenuRules(Menu menu, MenuAction action, int client, int param)
 					char subtitle[128];
 					rules_kv.GetString("subtitle", subtitle, sizeof(subtitle));
 					
-					panel.DrawText(subtitle);
+					sub.AddItem("", subtitle, ITEMDRAW_DISABLED);
 					rules_kv.GoBack();
 				}	
 			}	
 			
 			if(maxsub == 0)
-				panel.DrawText("Aucune donnée trouvée !");
+				sub.AddItem("", "Aucune donnée trouvée !", ITEMDRAW_DISABLED);
 			
 			rules_kv.Rewind();
 			
-			panel.DrawItem("Retour");
-			panel.Send(client, Handle_SubMenuRules, -1);
+			sub.ExitButton = true;
+			sub.ExitBackButton = true;
+			sub.Display(client, MENU_TIME_FOREVER);
 		}	
 	}
 	else if(action == MenuAction_Cancel)
