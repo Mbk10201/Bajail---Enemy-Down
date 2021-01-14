@@ -7,6 +7,11 @@
                                                          
 */
 
+public Action Command_TestHudMsg(int client, int args)
+{
+	PrintHudMessage(client, "Test");
+}	
+
 public Action Command_Spectate(int client, int args) {
 	if (IsValidClient(client, true))
 		return Plugin_Handled;
@@ -81,7 +86,11 @@ public int MenuHandler_OrderQr(Menu menu, MenuAction action, int client, int par
 				g_bQr = true;
 				g_iCdrQr = 6;
 				CPrintToChatAll("%s L'ordre est quartier restreint %s.", PREFIX, info);
-				PrintCenterTextAll("-- L'ordre est quartier restreint %s --", info);
+				
+				char format[128];
+				Format(STRING(format), "-- L'ordre est quartier restreint %s --", info);	
+				PrintHudMessageAll(format);
+				
 				EmitSoundToAll(SOUND_QR, _, _, _, _, 0.1);
 			}
 			else {
@@ -130,7 +139,7 @@ public Action Command_Drop(int client, int args) {
 		if(g_iLastRequest.ROULETTE || g_iLastRequest.COWBOY) {
 			return Plugin_Handled;
 		}
-		if(StrContains(sWeapon, "c4", false) != -1 && GetClientTeam(client) == CS_TEAM_T || StrContains(sWeapon, "taser", false) != -1 && GetClientTeam(client) == CS_TEAM_CT) {
+		if(StrContains(sWeapon, "taser", false) != -1 && GetClientTeam(client) == CS_TEAM_CT) {
 			CPrintToChat(client, "%s Vous ne pouvez pas lâcher cette arme (%s).", PREFIX, sWeapon);
 			EmitSoundToClient(client, SOUND_CTBAN);
 			return Plugin_Handled;
@@ -1052,10 +1061,7 @@ public Action Command_Gift(int client, int args) {
 public Action Command_Store(int client, int args) {
 	if (IsValidClient(client, true))
 		if (g_hDatabase != null)
-			if (GetTotalPlayer(2) > 1)
-				OpenStore(client);
-			else
-				CPrintToChat(client, "%s Le Nombre de Prisonniers en vie n'est pas suffisant.", PREFIX);
+			OpenStore(client);
 		else
 			CPrintToChat(client, "%s La Base de Données est hors-ligne.", PREFIX);
 	else

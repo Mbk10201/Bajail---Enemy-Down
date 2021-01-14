@@ -20,7 +20,9 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 				g_PlayerBonus[attacker].Munition_Incendiaires--; 
 				IgniteEntity(victim, 2.0); 
 
-				PrintCenterText(attacker, "%d Balle%s Incendiaire%s", g_PlayerBonus[attacker].Munition_Incendiaires, (g_PlayerBonus[attacker].Munition_Incendiaires > 1 ? "s" : ""), (g_PlayerBonus[attacker].Munition_Incendiaires > 1 ? "s" : ""));
+				char format[128];
+				Format(STRING(format),  "%d Balle%s Incendiaire%s", g_PlayerBonus[attacker].Munition_Incendiaires, (g_PlayerBonus[attacker].Munition_Incendiaires > 1 ? "s" : ""), (g_PlayerBonus[attacker].Munition_Incendiaires > 1 ? "s" : ""));
+				PrintHudMessage(attacker, format);
 			}
 			else if (g_PlayerBonus[attacker].Munition_Aveuglantes && !bajail[victim].g_bClientIsAveugled) { 
 				bajail[victim].g_bClientIsAveugled = true; 
@@ -29,7 +31,9 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 				Client_ScreenFade(victim, 1, FFADE_IN|FFADE_PURGE, _, 20, 0, 0, 255);
 				CreateTimer(MUNITION_AVEUGLANTE_TIME, Timer_RemoveAveuglante, victim, TIMER_FLAG_NO_MAPCHANGE); 
 				 
-				PrintCenterText(attacker, "%d Balle%s Aveuglante%s", g_PlayerBonus[attacker].Munition_Aveuglantes, (g_PlayerBonus[attacker].Munition_Aveuglantes > 1 ? "s" : ""), (g_PlayerBonus[attacker].Munition_Aveuglantes > 1 ? "s" : ""));
+				char format[128];
+				Format(STRING(format), "%d Balle%s Aveuglante%s", g_PlayerBonus[attacker].Munition_Aveuglantes, (g_PlayerBonus[attacker].Munition_Aveuglantes > 1 ? "s" : ""), (g_PlayerBonus[attacker].Munition_Aveuglantes > 1 ? "s" : ""));
+				PrintHudMessage(attacker, format);			
 			}
 			else if (g_PlayerBonus[attacker].Munition_Explosives && !bajail[victim].g_bClientIsParalyzed) { 
 				bajail[victim].g_bClientIsParalyzed = true; 
@@ -38,7 +42,9 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 				Client_Shake(victim, _, 35.0, 100.0, MUNITION_EXPLOSIVE_TIME);
 				CreateTimer(MUNITION_EXPLOSIVE_TIME, Timer_RemoveExplosive, victim, TIMER_FLAG_NO_MAPCHANGE); 
 				 
-				PrintCenterText(attacker, "%d Balle%s Sonnante%s", g_PlayerBonus[attacker].Munition_Explosives, (g_PlayerBonus[attacker].Munition_Explosives > 1 ? "s" : ""), (g_PlayerBonus[attacker].Munition_Explosives > 1 ? "s" : ""));
+				char format[128];
+				Format(STRING(format),  "%d Balle%s Sonnante%s", g_PlayerBonus[attacker].Munition_Explosives, (g_PlayerBonus[attacker].Munition_Explosives > 1 ? "s" : ""), (g_PlayerBonus[attacker].Munition_Explosives > 1 ? "s" : ""));
+				PrintHudMessage(attacker, format);	
 			}
 			else if (g_PlayerBonus[attacker].Munition_Glacees && !bajail[victim].g_bClientIsFrozen) {
 				g_PlayerBonus[attacker].Munition_Glacees--; 
@@ -54,7 +60,10 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 				 
 				GetClientEyePosition(victim, vec); 
 				EmitAmbientSound(SOUND_FREEZE, vec, victim, SNDLEVEL_RAIDSIREN); 
-				PrintCenterText(attacker, "%d Balle%s Glacée%s", g_PlayerBonus[attacker].Munition_Glacees, (g_PlayerBonus[attacker].Munition_Glacees > 1 ? "s" : ""), (g_PlayerBonus[attacker].Munition_Glacees > 1 ? "s" : ""));
+				
+				char format[128];
+				Format(STRING(format), "%d Balle%s Glacée%s", g_PlayerBonus[attacker].Munition_Glacees, (g_PlayerBonus[attacker].Munition_Glacees > 1 ? "s" : ""), (g_PlayerBonus[attacker].Munition_Glacees > 1 ? "s" : ""));
+				PrintHudMessage(attacker, format);	
 			}
 		}
 		
@@ -340,7 +349,11 @@ public Action Timer_Infirmier(Handle timer, any client) {
 					if (Health < BONUS_INFIRMIER_MAXIMUM) { 
 						BeamRing(client, i); 
 						SetEntityHealth(i, (Total > BONUS_INFIRMIER_MAXIMUM ? BONUS_INFIRMIER_MAXIMUM : Total)); 
-						PrintCenterText(i, "%N vous soigne", client); 
+						
+						char format[128];
+						Format(STRING(format),"%N vous soigne", client); 
+						PrintHudMessage(i, format);	
+
 						bHeal = true; 
 					} 
 				}

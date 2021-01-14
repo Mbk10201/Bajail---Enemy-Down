@@ -137,7 +137,12 @@ public Action CreateKnife(Handle timer, any client)
 	SDKHookEx(knife, SDKHook_Touch, KnifeHit);
 
 	if (g_iKnives[client]) g_iKnives[client]--;
-	if (!g_iLastRequest[THROWING]) PrintCenterText(client, "Couteau%s de Lancer: %i", (g_iKnives[client] > 1 ? "x" : ""), g_iKnives[client]);
+	if (!g_iLastRequest[THROWING]) 
+	{
+		char format[128];
+		Format(STRING(format), "Couteau%s de Lancer: %i", (g_iKnives[client] > 1 ? "x" : ""), g_iKnives[client]);
+		PrintHudMessage(client, format);	
+	}
 }
 
 int GetTraceHullEntityIndex(float pos[3], int xindex)

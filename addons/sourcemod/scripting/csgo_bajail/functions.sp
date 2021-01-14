@@ -434,7 +434,9 @@ void Rending(int client) {
 	bajail[client].g_NoDv = true;
 	g_iPlayerStuff[client].GIFT = 0;
 	
-	PrintCenterText(client, "Rend%s restant%s: %i", (g_iPlayerStuff[client].REND > 1 ? "s" : ""),(g_iPlayerStuff[client].REND > 1 ? "s" : ""), g_iPlayerStuff[client].REND);
+	char format[128];
+	Format(STRING(format), "Rend%s restant%s: %i", (g_iPlayerStuff[client].REND > 1 ? "s" : ""),(g_iPlayerStuff[client].REND > 1 ? "s" : ""), g_iPlayerStuff[client].REND);
+	PrintHudMessage(client, format);
 }
 
 bool Tazing(int client) {
@@ -472,7 +474,12 @@ bool Tazing(int client) {
 											
 				g_hTazerTimer[target] = CreateTimer(0.1, Timer_TazerRefresh, target, TIMER_REPEAT);
 
-				if (g_iPlayerStuff[client].TAZER) PrintCenterText(client, "Taser%s restant%s: %i", (g_iPlayerStuff[client].TAZER > 1 ? "s" : ""),(g_iPlayerStuff[client].TAZER > 1 ? "s" : ""), g_iPlayerStuff[client].TAZER);
+				if (g_iPlayerStuff[client].TAZER) 
+				{
+					char format[128];
+					Format(STRING(format),  "Taser%s restant%s: %i", (g_iPlayerStuff[client].TAZER > 1 ? "s" : ""),(g_iPlayerStuff[client].TAZER > 1 ? "s" : ""), g_iPlayerStuff[client].TAZER);
+					PrintHudMessage(client, format);
+				}
 				return true;
 			}
 			else
@@ -506,7 +513,10 @@ void RWing(int client) {
 			if (fDistance <= 160) {
 				RemoveEdict(entity);
 				g_iPlayerStuff[client].RW--;
-				PrintCenterText(client, "RW%s restant%s: %i", (g_iPlayerStuff[client].RW > 1 ? "s" : ""),(g_iPlayerStuff[client].RW > 1 ? "s" : ""), g_iPlayerStuff[client].RW);
+				
+				char format[128];
+				Format(STRING(format),  "RW%s restant%s: %i", (g_iPlayerStuff[client].RW > 1 ? "s" : ""),(g_iPlayerStuff[client].RW > 1 ? "s" : ""), g_iPlayerStuff[client].RW);
+				PrintHudMessage(client, format);
 				CPrintToChat(client, "%s Vous avez supprimé l'arme au sol.", PREFIX);
 			}
 		}
@@ -1042,7 +1052,7 @@ void SwitchRandom(int iTeam, bool bAlive) {
 		
 		CS_SwitchTeam(client, iTeam == 2 ? 3 : 2);
 		RequestFrame(Frame_Respawn, client);
-		PrintCenterText(client, "Vous avez été auto-assigné.");
+		PrintHudMessage(client, "Vous avez été auto-assigné.");
 	}
 }
 
@@ -1222,3 +1232,24 @@ stock bool isMappeur(int client) {
 		return true;
 	return false;
 }
+
+stock void PrintHudMessage(int client, const char[] typemessage)
+{
+	if (IsValidClient(client, true))
+	{
+		SetHudTextParams(-1.0, -0.4, 1.0, 255, 255, 255, 255, 0, 0.00, 0.3, 0.4);
+		ShowHudText(client, -1, typemessage);
+	}	
+}	
+
+stock void PrintHudMessageAll(const char[] typemessage)
+{
+	LoopClients(i) 
+	{
+		if (IsValidClient(i, true))
+		{
+			SetHudTextParams(-1.0, -0.4, 1.0, 255, 255, 255, 255, 0, 0.00, 0.3, 0.4);
+			ShowHudText(i, -1, typemessage);
+		}
+	}		
+}	

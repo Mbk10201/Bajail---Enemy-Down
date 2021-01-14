@@ -12,7 +12,6 @@
 #include <steamworks>
 #include <devzones>
 
-
 #include "csgo_bajail/globals.sp"
 #include "csgo_bajail/mapzones.sp"
 #include "csgo_bajail/functions.sp"
@@ -72,6 +71,8 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_store", Command_Store);
 	RegConsoleCmd("sm_shop", Command_Store);
 	RegConsoleCmd("sm_boutique", Command_Store);
+	
+	RegConsoleCmd("sm_testhudmsg", Command_TestHudMsg);
 	
 	AddCommandListener(Command_JoinTeam, "jointeam");
 	AddCommandListener(Command_ViewWeapon, "+lookatweapon");
@@ -853,7 +854,10 @@ public void Hook_JailOpen(const char[] output, int entity, int activator, float 
 				g_bQuartierLibre = true;
 			} 
 			
-			PrintCenterTextAll("Cellules ouvertes par %N", activator);
+			char format[128];
+			Format(STRING(format), "Cellules ouvertes par %N", activator);		
+			PrintHudMessageAll(format);
+			
 			CPrintToChatAll("%s Les Prisonniers peuvent désormais parler !", PREFIX);
 			
 			CheckTheGame();
@@ -1053,12 +1057,14 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			}
 			else {
 				g_iCowboy[client].MRB--;
-				PrintCenterText(client, "Appuie %ix sur CLIC DROIT !", g_iCowboy[client].MRB);
+				char format[64];
+				Format(STRING(format), "Appuie %ix sur CLIC DROIT !", g_iCowboy[client].MRB);
+				PrintHudMessage(client, format);
 				
 				if (!g_iCowboy[client].MRB) {					
 					GivePlayerItemAny(client, "weapon_deagle");
 					g_iCowboy[client].WIN = true;
-					PrintCenterText(client, "Tire sur ton adversaire !");
+					PrintHudMessage(client, "Tire sur ton adversaire !");
 				}
 			}
 		}
@@ -1069,12 +1075,14 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			}
 			else {
 				g_iCowboy[client].USE--;
-				PrintCenterText(client, "Appuie %ix sur UTILISER !", g_iCowboy[client].USE);
+				char format[64];
+				Format(STRING(format), "Appuie %ix sur UTILISER !", g_iCowboy[client].USE);
+				PrintHudMessage(client, format);
 				
 				if (!g_iCowboy[client].USE) {					
 					GivePlayerItemAny(client, "weapon_deagle");
 					g_iCowboy[client].WIN = true;
-					PrintCenterText(client, "Tire sur ton adversaire !");
+					PrintHudMessage(client, "Tire sur ton adversaire !");
 				}
 			}
 		}
@@ -1085,12 +1093,14 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			}
 			else {
 				g_iCowboy[client].CROUCH--;
-				PrintCenterText(client, "Appuie %ix sur ACCROUPI !", g_iCowboy[client].CROUCH);
+				char format[64];
+				Format(STRING(format), "Appuie %ix sur ACCROUPI !", g_iCowboy[client].CROUCH);
+				PrintHudMessage(client, format);
 				
 				if (!g_iCowboy[client].CROUCH) {
 					GivePlayerItemAny(client, "weapon_deagle");
 					g_iCowboy[client].WIN = true;
-					PrintCenterText(client, "Tire sur ton adversaire !");
+					PrintHudMessage(client, "Tire sur ton adversaire !");
 				}
 			}
 		}
@@ -1184,7 +1194,12 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 							GivePlayerItemAny(client, "weapon_knife");
 						}
 					}
-					else if (buttons & IN_ATTACK2) PrintCenterText(client, "Taser%s restant%s: %i", (g_iPlayerStuff[client].TAZER > 1 ? "s" : ""),(g_iPlayerStuff[client].TAZER > 1 ? "s" : ""), g_iPlayerStuff[client].TAZER);
+					else if (buttons & IN_ATTACK2)
+					{					
+						char format[64];
+						Format(STRING(format), "Taser%s restant%s: %i", (g_iPlayerStuff[client].TAZER > 1 ? "s" : ""),(g_iPlayerStuff[client].TAZER > 1 ? "s" : ""), g_iPlayerStuff[client].TAZER);
+						PrintHudMessage(client, format);
+					}
 					buttons &= ~IN_ATTACK;
 					buttons &= ~IN_ATTACK2;
 					return Plugin_Changed;
@@ -1524,9 +1539,14 @@ public Action Timer_HUDPanel(Handle timer, any client) {
 		}
 		
 		char sNameCap[64];
-		LoopClients(i) {
+		LoopClients(i) 
+		{
 			if(IsValidClient(i) && GetClientTeam(i) == CS_TEAM_CT && bajail[i].g_bGardienChef)
+			{
 				GetClientName(i, STRING(sNameCap));
+				if(!IsPlayerAlive(i))
+					sNameCap = "Décédé";
+			}	
 		}
 		
 		GetZoneName(client);
@@ -1546,9 +1566,9 @@ public Action Timer_HUDPanel(Handle timer, any client) {
 		if(bajail[client].g_bHUDStatus) 
 		{
 			if(g_hCheckChef != null) 
-				PrintHintText(client, "     <font color='#0363ff'>Enemy-Down</font>\nCapitaine: Elections en cours\nCrédits: %i/%i", g_iPlayerStuff[client].POINTS, maxCredits[client]);
+				PrintHintText(client, "     <font color='#0363ff'>Enemy-Down</font>\nCapitaine: Elections en cours\nCrédits: %i", g_iPlayerStuff[client].POINTS);
 			else 
-				PrintHintText(client, "     <font color='#0363ff'>Enemy-Down</font>\nCapitaine: %s\nCrédits: %i/%i", sNameCap, g_iPlayerStuff[client].POINTS, maxCredits[client]);
+				PrintHintText(client, "     <font color='#0363ff'>Enemy-Down</font>\nCapitaine: %s\nCrédits: %i", sNameCap, g_iPlayerStuff[client].POINTS);
 		}	
 	}
 	else if (!IsValidClient(client)) {
@@ -1722,7 +1742,7 @@ public Action Timer_Global(Handle timer) {
 				EmitSoundToAll(SOUND_QL, _, _, _, _, 0.1);
 			}
 			
-			PrintCenterTextAll("Cellules ouvertes automatiquement");
+			PrintHudMessageAll("Cellules ouvertes automatiquement");
 			g_bQuartierLibre = true;
 			
 			CheckEverything(-1);
@@ -1801,15 +1821,21 @@ public Action Timer_Global(Handle timer) {
 							g_iCowboy[i].CROUCH = iCount;
 						}
 					}
-					PrintCenterText(i, "Appuie %ix sur %s !", g_iCowboy[i].MRB + g_iCowboy[i].USE + g_iCowboy[i].CROUCH, (g_iCowboy[i].MRB ? "CLIC DROIT" : (g_iCowboy[i].USE ? "UTILISER" : "ACCROUPI")));
+					
+					char format[64];
+					Format(STRING(format), "Appuie %ix sur %s !", g_iCowboy[i].MRB + g_iCowboy[i].USE + g_iCowboy[i].CROUCH, (g_iCowboy[i].MRB ? "CLIC DROIT" : (g_iCowboy[i].USE ? "UTILISER" : "ACCROUPI")));
+					PrintHudMessage(i, format);
 				}
 			}
 		}
 	}
 	else if (g_iLastRequest.COWBOY) {
 		LoopClients(i) {
-			if (IsValidClient(i, true) && g_iCowboy[i].COWBOY && !g_iCowboy[i].WIN) {
-				PrintCenterText(i, "Appuie %ix sur %s !", g_iCowboy[i].MRB + g_iCowboy[i].USE + g_iCowboy[i].CROUCH, (g_iCowboy[i].MRB ? "CLIC DROIT" : (g_iCowboy[i].USE ? "UTILISER" : "ACCROUPI")));
+			if (IsValidClient(i, true) && g_iCowboy[i].COWBOY && !g_iCowboy[i].WIN) 
+			{
+				char display[80];
+				Format(STRING(display), "Appuie %ix sur %s !", g_iCowboy[i].MRB + g_iCowboy[i].USE + g_iCowboy[i].CROUCH, (g_iCowboy[i].MRB ? "CLIC DROIT" : (g_iCowboy[i].USE ? "UTILISER" : "ACCROUPI")));
+				PrintHudMessage(i, display);
 			}
 		}
 	}
@@ -1909,11 +1935,11 @@ public void OnGrenadeImpactTouchPost(int iGrenade, int iOther) {
         if (GetEntProp(iOther, Prop_Send, "m_nSolidType", 1) && !(GetEntProp(iOther, Prop_Send, "m_usSolidFlags", 2) & 0x0004)) {
             int iOwner = GetEntPropEnt(iGrenade, Prop_Send, "m_hOwnerEntity");
 
-            if (iOwner != iOther) {
-				SetEntProp(iGrenade, Prop_Data, "m_takedamage", 2);
-				SetEntProp(iGrenade, Prop_Data, "m_iHealth", 1);
-
-				SDKHooks_TakeDamage(iGrenade, iGrenade, iGrenade, 10.0);
+            if (iOwner != iOther) 
+            {
+			SetEntProp(iGrenade, Prop_Data, "m_takedamage", 2);
+			SetEntProp(iGrenade, Prop_Data, "m_iHealth", 1);
+			SDKHooks_TakeDamage(iGrenade, iGrenade, iGrenade, 10.0);
             }
         }
     }
@@ -1943,5 +1969,8 @@ public Action ClientConnectIntro(Handle timer, any client)
 		CPrintToChat(client, "{yellow}◾️ {default}Discord: {lightblue}%s", DISCORD_URL);
 		CPrintToChat(client, "{yellow}◾️ {default}Site: {lightblue}%s", WEB_URL);	
 		CPrintToChat(client, "{darkred}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+		
+		PrecacheSound("enemy-down/jail/intro.mp3");
+		EmitSoundToClient(client, "enemy-down/jail/intro.mp3", client, _, _, _, 0.5);
 	}	
 }

@@ -220,8 +220,34 @@ void GenerateDVMenu(int client, int iPage = 1) {
 }
 
 public Action Command_DV(int client, int args) {
-	if (IsValidClient(client, true) && GetClientTeam(client) == CS_TEAM_T && g_bLastRequest && g_iDVTimer)
-		GenerateDVMenu(client);
+	if (GetTotalPlayer(2) == 1 && GetTotalPlayer(3) && !g_bLRWait && !g_bLastRequest && !g_bLRDenied) {
+		CPrintToChatAll("☰☰☰☰☰☰☰☰☰ DERNIÈRE VOLONTÉ ☰☰☰☰☰☰☰☰☰");
+			
+		g_bLRWait = true;
+					
+		EmitSoundToAll(SOUND_DV, _, _, _, _, 0.1);
+					
+		LoopClients(i) {
+			if (IsValidClient(i, true) && GetClientTeam(i) == CS_TEAM_T) {
+				ResetClient(i);				
+				if (ReadPosition("dv_choice"))
+					TeleportEntity(i, g_fReadPos[0], NULL_VECTOR, view_as<float>({ 0.0, 0.0, 0.0 }));
+				DisarmClient(i);
+				SetEntityHealth(i, 100000);
+				SetEntityMoveType(i, MOVETYPE_NONE);
+				BuildMenuDv(i);
+				
+				//break;		??
+			}
+		}
+
+		g_iDVTimer = 21;
+
+		g_iJailsCooldown = 0;
+		
+		g_bChoixAleatoire = false;
+		g_bChoixAleatoireSecours = false;
+	}
 
 	return Plugin_Handled;
 }
@@ -237,7 +263,7 @@ public int PanelHandler_ChooseDV(Menu menu, MenuAction action, int client, int p
 						g_bLRPause = true;
 						g_iLastRequest.ISOLOIR = 1;
 						CPrintToChatAll("☰☰☰ ISOLOIR ☰☰☰");
-						PrintCenterTextAll("☰☰☰ ISOLOIR ☰☰☰");
+						PrintHudMessageAll("☰☰☰ ISOLOIR ☰☰☰");
 						LoopClients(i) {
 							if (IsValidClient(i, true) && GetClientTeam(i) == CS_TEAM_CT) {		
 								DisarmClient(i);
@@ -276,7 +302,7 @@ public int PanelHandler_ChooseDV(Menu menu, MenuAction action, int client, int p
 						g_bLRPause = false;
 						g_iLastRequest.BROCHETTE = 1;					
 						CPrintToChatAll("☰☰☰ BROCHETTE ☰☰☰");
-						PrintCenterTextAll("☰☰☰ BROCHETTE ☰☰☰");
+						PrintHudMessageAll("☰☰☰ BROCHETTE ☰☰☰");
 						LoopClients(i) {
 							if (IsValidClient(i, true) && GetClientTeam(i) == CS_TEAM_CT) {
 								DisarmClient(i);
@@ -368,7 +394,7 @@ public int PanelHandler_ChooseDV(Menu menu, MenuAction action, int client, int p
 						int iPlayersCount;
 				
 						CPrintToChatAll("☰☰☰ ESCORTE VIP ☰☰☰");
-						PrintCenterTextAll("☰☰☰ ESCORTE VIP ☰☰☰");
+						PrintHudMessageAll("☰☰☰ ESCORTE VIP ☰☰☰");
 				
 						LoopClients(i) {
 							if (IsValidClient(i, true) && GetClientTeam(i) == CS_TEAM_CT) {
@@ -480,99 +506,99 @@ public int MenuHandler_EnemyChoosen(Menu menu, MenuAction action, int client, in
 				float fWaitTime = -1.0;
 				if (g_iLastRequest.ROULETTE == 1 && ReadPosition("roulette")) {
 					CPrintToChatAll("☰☰☰ ROULETTE ☰☰☰");
-					PrintCenterTextAll("☰☰☰ ROULETTE ☰☰☰");
+					PrintHudMessageAll("☰☰☰ ROULETTE ☰☰☰");
 					fWaitTime = 1.0;
 				}
 				else if (g_iLastRequest.ROULETTE == 2 && ReadPosition("roulette_c")) { 
 					CPrintToChatAll("☰☰☰ ROULETTE CHINOISE ☰☰☰");
-					PrintCenterTextAll("☰☰☰ ROULETTE CHINOISE ☰☰☰");
+					PrintHudMessageAll("☰☰☰ ROULETTE CHINOISE ☰☰☰");
 					fWaitTime = 1.0;
 					
 					SetNoRecoil(true);
 				}
 				else if (g_iLastRequest.ROULETTE == 3 && ReadPosition("roulette_russe")) { 
 					CPrintToChatAll("☰☰☰ ROULETTE RUSSE ☰☰☰");
-					PrintCenterTextAll("☰☰☰ ROULETTE RUSSE ☰☰☰");
+					PrintHudMessageAll("☰☰☰ ROULETTE RUSSE ☰☰☰");
 					fWaitTime = 1.0;
 				}
 				else if (g_iLastRequest.ROULETTE == 4 && ReadPosition("planche_pirate")) { 
 					CPrintToChatAll("☰☰☰ PLANCHE PIRATE ☰☰☰");
-					PrintCenterTextAll("☰☰☰ PLANCHE PIRATE ☰☰☰");
+					PrintHudMessageAll("☰☰☰ PLANCHE PIRATE ☰☰☰");
 					fWaitTime = 1.0;
 					
 					SetNoRecoil(true);
 				}
 				else if (g_iLastRequest.COUTEAU == 1 && ReadPosition("couteau")) { 
 					CPrintToChatAll("☰☰☰ COMBAT AU COUTEAU ☰☰☰");
-					PrintCenterTextAll("☰☰☰ COMBAT AU COUTEAU ☰☰☰");
+					PrintHudMessageAll("☰☰☰ COMBAT AU COUTEAU ☰☰☰");
 					fWaitTime = 3.0;
 				}
 				else if (g_iLastRequest.COUTEAU == 2 && ReadPosition("couteau_iso")) { 
 					CPrintToChatAll("☰☰☰ COUTEAU AU COUTEAU RAPIDE ☰☰☰");
-					PrintCenterTextAll("☰☰☰ COUTEAU AU COUTEAU RAPIDE ☰☰☰");
+					PrintHudMessageAll("☰☰☰ COUTEAU AU COUTEAU RAPIDE ☰☰☰");
 					fWaitTime = 3.0;
 				}
 				else if (g_iLastRequest.COUTEAU == 3 && ReadPosition("couteau_third")) { 
 					CPrintToChatAll("☰☰☰ COMBAT AU COUTEAU 3ème personne ☰☰☰");
-					PrintCenterTextAll("☰☰☰ COMBAT AU COUTEAU 3ème personne ☰☰☰");
+					PrintHudMessageAll("☰☰☰ COMBAT AU COUTEAU 3ème personne ☰☰☰");
 					SetThirdperson(g_indexDV[INDEX_T], true);						
 					SetThirdperson(g_indexDV[INDEX_CT], true);
 					fWaitTime = 3.0;
 				}
 				else if (g_iLastRequest.COUTEAU == 4 && ReadPosition("black_cut")) { 
 					CPrintToChatAll("☰☰☰ COMBAT AU COUTEAU AVEUGLANT ☰☰☰");
-					PrintCenterTextAll("☰☰☰ COMBAT AU COUTEAU AVEUGLANT ☰☰☰");
+					PrintHudMessageAll("☰☰☰ COMBAT AU COUTEAU AVEUGLANT ☰☰☰");
 					Client_ScreenFade(g_indexDV[INDEX_T], 9999, FFADE_IN|FFADE_PURGE, 9999, 0, 0, 0, 255);
 					Client_ScreenFade(g_indexDV[INDEX_CT], 9999, FFADE_IN|FFADE_PURGE, 9999, 0, 0, 0, 255);
 					fWaitTime = 3.0;
 				}
 				else if (g_iLastRequest.COUTEAU == 5 && ReadPosition("cut_aqua")) { 
 					CPrintToChatAll("☰☰☰ COMBAT AU COUTEAU AQUATIQUE ☰☰☰");
-					PrintCenterTextAll("☰☰☰ COMBAT AU COUTEAU AQUATIQUE ☰☰☰");
+					PrintHudMessageAll("☰☰☰ COMBAT AU COUTEAU AQUATIQUE ☰☰☰");
 					fWaitTime = 3.0;
 				}
 				else if (g_iLastRequest.COUTEAU == 6 && ReadPosition("couteau")) { 
 					CPrintToChatAll("☰☰☰ COMBAT AU COUTEAU INTERSTELLAIRE ☰☰☰");
-					PrintCenterTextAll("☰☰☰ COMBAT AU COUTEAU INTERSTELLAIRE ☰☰☰");
+					PrintHudMessageAll("☰☰☰ COMBAT AU COUTEAU INTERSTELLAIRE ☰☰☰");
 					fWaitTime = 3.0;
 				}
 				else if (g_iLastRequest.LANCER && ReadPosition("lancer")) { 
 					CPrintToChatAll("☰☰☰ LANCER DE DEAGLE ☰☰☰");
-					PrintCenterTextAll("☰☰☰ LANCER DE DEAGLE ☰☰☰");
+					PrintHudMessageAll("☰☰☰ LANCER DE DEAGLE ☰☰☰");
 					fWaitTime = 1.0;
 				}
 				else if (g_iLastRequest.UNSCOPE == 1 && ReadPosition("unscope_awp")) { 		
 					CPrintToChatAll("☰☰☰ UNSCOPE AWP ☰☰☰");
-					PrintCenterTextAll("☰☰☰ UNSCOPE AWP ☰☰☰");
+					PrintHudMessageAll("☰☰☰ UNSCOPE AWP ☰☰☰");
 					fWaitTime = 3.0;
 				}
 				else if (g_iLastRequest.UNSCOPE == 2 && ReadPosition("unscope_scout")) { 	
 					CPrintToChatAll("☰☰☰ UNSCOPE SCOUT ☰☰☰");
-					PrintCenterTextAll("☰☰☰ UNSCOPE SCOUT ☰☰☰");
+					PrintHudMessageAll("☰☰☰ UNSCOPE SCOUT ☰☰☰");
 					fWaitTime = 3.0;
 				}
 				else if (g_iLastRequest.SCOPE == 1 && ReadPosition("unscope_awp")) {
 					CPrintToChatAll("☰☰☰ SCOPE AWP ☰☰☰");
-					PrintCenterTextAll("☰☰☰ SCOPE AWP ☰☰☰");
+					PrintHudMessageAll("☰☰☰ SCOPE AWP ☰☰☰");
 					fWaitTime = 3.0;
 				}
 				else if (g_iLastRequest.SCOPE == 2 && ReadPosition("unscope_scout")) {
 					CPrintToChatAll("☰☰☰ SCOPE SCOUT ☰☰☰");
-					PrintCenterTextAll("☰☰☰ SCOPE SCOUT ☰☰☰");
+					PrintHudMessageAll("☰☰☰ SCOPE SCOUT ☰☰☰");
 					fWaitTime = 3.0;
 				}
 				else if (g_iLastRequest.BASKET && ReadPosition("basket")) { 		
 					CPrintToChatAll("☰☰☰ BASKET ☰☰☰");
-					PrintCenterTextAll("☰☰☰ BASKET ☰☰☰");
+					PrintHudMessageAll("☰☰☰ BASKET ☰☰☰");
 					fWaitTime = 1.0;
 				}
 				else if (g_iLastRequest.COWBOY && ReadPosition("cowboy")) { 		
 					CPrintToChatAll("☰☰☰ COWBOY ☰☰☰");
-					PrintCenterTextAll("☰☰☰ COWBOY ☰☰☰");
+					//PrintHudMessageAll("☰☰☰ COWBOY ☰☰☰");
 					g_iCowboy[g_indexDV[INDEX_T]].COWBOY = true;
 					g_iCowboy[g_indexDV[INDEX_CT]].COWBOY = true;
-					PrintCenterText(g_indexDV[INDEX_T], "Prépares-toi à dégainer ton arme !");
-					PrintCenterText(g_indexDV[INDEX_CT], "Prépares-toi à dégainer ton arme !");
+					PrintHudMessage(g_indexDV[INDEX_T], "Prépares-toi à dégainer ton arme !");
+					PrintHudMessage(g_indexDV[INDEX_CT], "Prépares-toi à dégainer ton arme !");
 					g_iCowboyTimer = GetRandomInt(3, 7);
 					EmitSoundToClient(g_indexDV[INDEX_T], SOUND_COWBOY, _, _, _, _, 0.1);
 					EmitSoundToClient(g_indexDV[INDEX_CT], SOUND_COWBOY, _, _, _, _, 0.1);
@@ -580,29 +606,29 @@ public int MenuHandler_EnemyChoosen(Menu menu, MenuAction action, int client, in
 				}
 				else if (g_iLastRequest.GRENADE && ReadPosition("grenade")) { 	
 					CPrintToChatAll("☰☰☰ GRENADE PARADISE ☰☰☰");
-					PrintCenterTextAll("☰☰☰ GRENADE PARADISE ☰☰☰");
+					PrintHudMessageAll("☰☰☰ GRENADE PARADISE ☰☰☰");
 					fWaitTime = 3.0;
 				}
 				else if (g_iLastRequest.AIM && ReadPosition("aim")) { 		
 					CPrintToChatAll("☰☰☰ AIM ☰☰☰");
-					PrintCenterTextAll("☰☰☰ AIM ☰☰☰");
+					PrintHudMessageAll("☰☰☰ AIM ☰☰☰");
 					fWaitTime = 3.0;
 				}
 				else if (g_iLastRequest.POMPE && ReadPosition("guerrepompe")) { 		
 					CPrintToChatAll("☰☰☰ GUERRE DE POMPES ☰☰☰");
-					PrintCenterTextAll("☰☰☰ GUERRE DE POMPES ☰☰☰");
+					PrintHudMessageAll("☰☰☰ GUERRE DE POMPES ☰☰☰");
 					fWaitTime = 3.0;
 				}
 				else if (g_iLastRequest.PATATE && ReadPosition("patate_chaude")) { 		
 					CPrintToChatAll("☰☰☰ PATATE CHAUDE ☰☰☰");
-					PrintCenterTextAll("☰☰☰ PATATE CHAUDE ☰☰☰");
+					PrintHudMessageAll("☰☰☰ PATATE CHAUDE ☰☰☰");
 					fWaitTime = 3.0;
 					
 					g_hDVTimerPatate = CreateTimer(GetRandomFloat(10.0, 20.0)+fWaitTime, Timer_CheckPatateDv);
 				}
 				else if (g_iLastRequest.CHAT && ReadPosition("chat")) { 		
 					CPrintToChatAll("☰☰☰ CHAT ☰☰☰");
-					PrintCenterTextAll("☰☰☰ CHAT ☰☰☰");
+					PrintHudMessageAll("☰☰☰ CHAT ☰☰☰");
 					fWaitTime = 3.0;
 					
 					switch(GetRandomInt(1,2)) {
@@ -614,12 +640,12 @@ public int MenuHandler_EnemyChoosen(Menu menu, MenuAction action, int client, in
 				} 
 				else if (g_iLastRequest.SULFATEUSE && ReadPosition("duel_sulfateuse")) { 		
 					CPrintToChatAll("☰☰☰ DUEL SULFATEUSE ☰☰☰");
-					PrintCenterTextAll("☰☰☰ DUEL SULFATEUSE ☰☰☰");
+					PrintHudMessageAll("☰☰☰ DUEL SULFATEUSE ☰☰☰");
 					fWaitTime = 3.0;
 				}
 				else if (g_iLastRequest.BALLE && ReadPosition("balle_prisonnier")) { 		
 					CPrintToChatAll("☰☰☰ BALLE AUX PRISONNIERS ☰☰☰");
-					PrintCenterTextAll("☰☰☰ BALLE AUX PRISONNIERS ☰☰☰");
+					PrintHudMessageAll("☰☰☰ BALLE AUX PRISONNIERS ☰☰☰");
 					fWaitTime = 3.0;
 				}
 				
@@ -807,6 +833,7 @@ public Action Timer_DVInitialize(Handle timer, any client) {
 			SetEntityHealth(client, 1);
 			GivePlayerItemAny(client, "weapon_flashbang");
 			SetEntData(client, FindSendPropInfo("CBaseEntity", "m_CollisionGroup"), 5, 4, true);
+			SetEntityGravity(client, 0.2);
 		}
 
 		g_bLRPause = false;
