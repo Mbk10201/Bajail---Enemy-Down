@@ -618,9 +618,9 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	
 	if (isVip(client)) {
 		g_iPlayerStuff[client].GIFT = 1;
-		iHealthBonus += 20;
+		iHealthBonus += 15;
 	} else if (isModoTest(client) || isModo(client) || isAdmin(client)) {
-		iHealthBonus += 10;
+		iHealthBonus += 15;
 	}
 	else {
 		char PlayerClanTag[32];
@@ -668,9 +668,9 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		}
 		
 		if(isVip(client) && ReadPosition("jail_vip")) {
-			switch (GetRandomInt(1, 30)) {
+			switch (GetRandomInt(1, 10)) {
 				case 1: {
-					CPrintToChat(client, "{green}[VIP] {default}Vous venez de spawn dans la jailvip !");
+					CPrintToChat(client, "{green}[VIP] {default}Vous venez de spawn dans la Jail VIP !");
 					TeleportEntity(client, g_fReadPos[0], NULL_VECTOR, view_as<float>({ 0.0, 0.0, 0.0 }));
 				}
 			}
@@ -890,7 +890,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 				SetNoRecoil(false);
 			}
 			else if (g_iLastRequest.VIP && victim == g_indexDV[INDEX_VIP] && attacker == g_indexDV[INDEX_T]) {
-				CPrintToChatAll("%s %N a reussi sa DV ! Ils peux abattre les gardes du corps.", PREFIX, g_indexDV[INDEX_T]);
+				CPrintToChatAll("%s %N a reussi sa DV ! Il peut abattre les gardes du corps.", PREFIX, g_indexDV[INDEX_T]);
 				ServerCommand("sm_freeze @ct 20");
 				LoopClients(i) {
 					if (IsValidClient(i, true) && GetClientTeam(i) == CS_TEAM_CT) SetEntProp(i, Prop_Data, "m_takedamage", 2, 1);
@@ -900,6 +900,11 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		
 		if (GetClientTeam(attacker) == CS_TEAM_T) {
 			g_iPlayerStuff[attacker].POINTS += 5;
+			if (isVip(attacker))
+			{
+				g_iPlayerStuff[attacker].POINTS += 5;
+				CPrintToChat(attacker, "%s Vous avez gagné le double de crédits grâce à votre {green}bonus VIP.", PREFIX);
+			}
 			
 			if (isVipPlus(attacker) && g_iPlayerStuff[attacker].POINTS > LIMIT_POINT_VIPPLUS) {
 				g_iPlayerStuff[attacker].POINTS = LIMIT_POINT_VIPPLUS;
@@ -1965,7 +1970,7 @@ public Action ClientConnectIntro(Handle timer, any client)
 	if(IsValidClient(client))
 	{
 		CPrintToChat(client, "{darkred}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");								   
-		CPrintToChat(client, "{yellow}◾️ {default}Bienvenue sur notre serveur BaJail");
+		CPrintToChat(client, "{yellow}◾️ {default}Bienvenue sur notre serveur Ba-Jail");
 		CPrintToChat(client, "{yellow}◾️ {default}Discord: {lightblue}%s", DISCORD_URL);
 		CPrintToChat(client, "{yellow}◾️ {default}Site: {lightblue}%s", WEB_URL);	
 		CPrintToChat(client, "{darkred}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
